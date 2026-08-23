@@ -122,7 +122,7 @@ Hỗ trợ **13 vision models** từ 3 providers với **tự động fallback**
 | **Chat AI** | ✅ | ❌ | ❌ |
 | **Tether FTP** | ✅ (9 cameras) | ✅ (9 cameras) | ⏱️ Dùng thử 30 phút |
 | **Batch Processing** | Unlimited | Unlimited | ❌ |
-| **AI Culling** | Full + Rules | Full | Giới hạn 20 ảnh |
+| **AI Culling** | Full + Rules | Full | ❌ |
 | **Cloud Models** | 13 | 5 | 1 (llama-3.2-11b) |
 | **Undo/Redo** | ✅ | ✅ | ❌ |
 | **Custom Preset Save** | ✅ | ❌ | ❌ |
