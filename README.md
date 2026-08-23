@@ -120,7 +120,7 @@ Hỗ trợ **13 vision models** từ 3 providers với **tự động fallback**
 | **Color Look Style** | 10 styles | 10 styles | ❌ |
 | **Color Grading + HSL** | ✅ | ✅ | ❌ |
 | **Chat AI** | ✅ | ❌ | ❌ |
-| **Tether FTP** | ✅ (9 cameras) | ✅ (9 cameras) | ⏱️ Dùng thử 30 phút |
+| **Tether FTP** | ✅ (9 cameras) | ✅ (9 cameras) | ⏱️ Dùng thử 1 giờ |
 | **Batch Processing** | Unlimited | Unlimited | ❌ |
 | **AI Culling** | Full + Rules | Full | ❌ |
 | **Cloud Models** | 13 | 5 | 1 (llama-3.2-11b) |
