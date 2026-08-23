@@ -1,0 +1,13 @@
+-- Vivid landscape preset
+s = {
+    Temperature = -5,
+    Tint = 0,
+    Exposure = 0,
+    Contrast = 15,
+    Highlights = -20,
+    Shadows = 15,
+    Vibrance = 20,
+    Clarity = 25,
+    Saturation = 10,
+    Dehaze = 10,
+}

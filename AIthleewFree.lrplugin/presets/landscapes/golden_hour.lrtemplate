@@ -1,0 +1,12 @@
+-- Golden hour landscape preset
+s = {
+    Temperature = 20,
+    Tint = 5,
+    Exposure = -0.1,
+    Contrast = 10,
+    Highlights = -25,
+    Shadows = 20,
+    Vibrance = 25,
+    Clarity = 15,
+    Saturation = 15,
+}

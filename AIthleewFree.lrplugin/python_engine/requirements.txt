@@ -1,0 +1,19 @@
+# LR Auto Color Pro - Python Dependencies
+# Install with: pip install -r requirements.txt
+
+# Core dependencies (required)
+numpy>=1.24.0
+Pillow>=10.0.0
+
+# Computer Vision (recommended)
+opencv-python>=4.8.0
+
+# Cloud API (required for Cloud Vision AI)
+requests>=2.31.0
+
+# Development dependencies (optional)
+pytest>=7.4.0
+pytest-cov>=4.1.0
+black>=23.0.0
+flake8>=6.0.0
+mypy>=1.5.0

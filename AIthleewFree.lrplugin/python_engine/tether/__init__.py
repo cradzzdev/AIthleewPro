@@ -1,0 +1,2 @@
+"""Tether module for AIthleewPro."""
+

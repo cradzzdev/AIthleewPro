@@ -1,0 +1,12 @@
+-- Warm portrait preset
+s = {
+    Temperature = 15,
+    Tint = 8,
+    Exposure = 0.15,
+    Contrast = 8,
+    Highlights = -10,
+    Shadows = 15,
+    Vibrance = 12,
+    Clarity = 5,
+    Saturation = 0,
+}

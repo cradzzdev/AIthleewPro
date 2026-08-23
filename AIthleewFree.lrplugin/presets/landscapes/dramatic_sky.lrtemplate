@@ -1,0 +1,13 @@
+-- Dramatic sky preset
+s = {
+    Temperature = -10,
+    Tint = -5,
+    Exposure = -0.2,
+    Contrast = 25,
+    Highlights = -35,
+    Shadows = 10,
+    Vibrance = 30,
+    Clarity = 35,
+    Saturation = 5,
+    Dehaze = 20,
+}

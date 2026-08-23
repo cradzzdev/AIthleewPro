@@ -1,0 +1,12 @@
+-- Soft portrait preset
+s = {
+    Temperature = 5,
+    Tint = 3,
+    Exposure = 0.2,
+    Contrast = -5,
+    Highlights = -20,
+    Shadows = 20,
+    Vibrance = 5,
+    Clarity = -10,
+    Saturation = -8,
+}
