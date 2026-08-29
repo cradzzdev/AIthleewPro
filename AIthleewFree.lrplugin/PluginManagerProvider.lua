@@ -47,7 +47,8 @@ return {
         local config = Config:getAll()
 
         propertyTable.plugin_name_display = "AIthleewFree (Basic Edition)"
-        propertyTable.plugin_version = "1.0.0 (Build 20260824 - Free)"
+        propertyTable.plugin_version = "2.0 (Free)"
+        propertyTable.website = "https://aithleewpro.vercel.app/"
         propertyTable.model_display = "meta/llama-3.2-11b-vision-instruct"
 
         local nvKey = config.nvidia_api_key or ""
@@ -113,6 +114,20 @@ return {
                             title = LrView.bind "plugin_version",
                             font = "<system/bold>",
                             text_color = LrColor(0.1, 0.5, 0.9),
+                            fill_horizontal = true,
+                        },
+                    },
+
+                    f:row {
+                        f:static_text {
+                            title = "Website chính thức:",
+                            width = 140,
+                            font = "<system/bold>",
+                        },
+                        f:static_text {
+                            title = LrView.bind "website",
+                            font = "<system/bold>",
+                            text_color = LrColor(0.15, 0.5, 0.85),
                             fill_horizontal = true,
                         },
                     },
@@ -202,6 +217,33 @@ return {
                             text_color = LrColor(0.9, 0.4, 0.0),
                             fill_horizontal = true,
                         },
+                    },
+                },
+            },
+
+            {
+                title = "Nhật Ký Cập Nhật (Changelog)",
+                synopsis = "Tính năng mới của AIthleewFree phiên bản 2.0.0",
+                f:column {
+                    bind_to_object = propertyTable,
+                    spacing = 6,
+                    fill_horizontal = true,
+
+                    f:row {
+                        f:static_text {
+                            title = "🌟 Phiên bản 2.0.0:",
+                            font = "<system/bold>",
+                            text_color = LrColor(0.1, 0.5, 0.9),
+                            width = 200,
+                        },
+                    },
+                    f:static_text {
+                        title = "• 🧠 Nâng cấp Vision AI Model tối ưu phân tích hình ảnh và bối cảnh chuẩn xác.\n" ..
+                                "• ☀️ Tự động cân bằng trắng Hybrid & cân chỉnh Tone cơ bản chuẩn xác.\n" ..
+                                "• 🎨 Giao diện tinh gọn, tập trung và trực quan hơn.\n" ..
+                                "• 🌐 Cập nhật Website chính thức https://aithleewpro.vercel.app/",
+                        font = "<system/small>",
+                        fill_horizontal = true,
                     },
                 },
             },

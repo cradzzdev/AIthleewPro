@@ -206,11 +206,42 @@ function TaskRunner:analyze(image_path, options)
         cmd = cmd .. string.format(' --intensity "%s"', options.intensity)
     end
 
+    if options.is_raw then
+        cmd = cmd .. " --is-raw"
+    end
+
+    if options.original_ext and options.original_ext ~= "" then
+        cmd = cmd .. string.format(' --original-ext "%s"', options.original_ext)
+    end
+
+    if options.current_temp ~= nil then
+        cmd = cmd .. string.format(' --current-temp %s', tostring(options.current_temp))
+    end
+
+    if options.current_tint ~= nil then
+        cmd = cmd .. string.format(' --current-tint %s', tostring(options.current_tint))
+    end
+
     cmd = cmd .. string.format(' 2> "%s"', err_log_path)
 
     logger:info("Running: " .. cmd)
 
     local exit_code = LrTasks.execute(cmd)
+
+    if LrFileUtils.exists(result_path) then
+        local result_content = LrFileUtils.readFile(result_path)
+        LrFileUtils.delete(result_path)
+        if result_content and result_content ~= "" then
+            local response = Json.decode(result_content)
+            if response then
+                if LrFileUtils.exists(err_log_path) then LrFileUtils.delete(err_log_path) end
+                if response.status == "error" then
+                    return nil, response.error or "Lỗi phân tích từ AI"
+                end
+                return response.result or response
+            end
+        end
+    end
 
     if exit_code ~= 0 then
         local err_detail = ""
@@ -229,27 +260,7 @@ function TaskRunner:analyze(image_path, options)
         LrFileUtils.delete(err_log_path)
     end
 
-    if not LrFileUtils.exists(result_path) then
-        return nil, "Không có file kết quả JSON được tạo ra"
-    end
-
-    local result_content = LrFileUtils.readFile(result_path)
-    LrFileUtils.delete(result_path)
-
-    if not result_content then
-        return nil, "Không thể đọc file kết quả JSON"
-    end
-
-    local result = Json.decode(result_content)
-    if not result then
-        return nil, "Không thể phân tích dữ liệu JSON kết quả"
-    end
-
-    if result.status == "error" then
-        return nil, result.error or "Lỗi không xác định từ Python Engine"
-    end
-
-    return result
+    return nil, "Không có file kết quả JSON được tạo ra"
 end
 
 function TaskRunner:get_python_path()
@@ -323,6 +334,21 @@ function TaskRunner:cull(image_path, options)
 
     local exit_code = LrTasks.execute(cmd)
 
+    if LrFileUtils.exists(result_path) then
+        local result_content = LrFileUtils.readFile(result_path)
+        LrFileUtils.delete(result_path)
+        if result_content and result_content ~= "" then
+            local response = Json.decode(result_content)
+            if response then
+                if LrFileUtils.exists(err_log_path) then LrFileUtils.delete(err_log_path) end
+                if response.status == "error" then
+                    return nil, response.error or "Lỗi chấm điểm ảnh AI"
+                end
+                return response.result or response
+            end
+        end
+    end
+
     if exit_code ~= 0 then
         local err_detail = ""
         if LrFileUtils.exists(err_log_path) then
@@ -340,27 +366,7 @@ function TaskRunner:cull(image_path, options)
         LrFileUtils.delete(err_log_path)
     end
 
-    if not LrFileUtils.exists(result_path) then
-        return nil, "Không có file kết quả JSON culling"
-    end
-
-    local result_content = LrFileUtils.readFile(result_path)
-    LrFileUtils.delete(result_path)
-
-    if not result_content then
-        return nil, "Không thể đọc file kết quả JSON culling"
-    end
-
-    local response = Json.decode(result_content)
-    if not response then
-        return nil, "Không thể phân tích dữ liệu JSON culling"
-    end
-
-    if response.status == "error" then
-        return nil, response.error or "Lỗi không xác định từ Culling Engine"
-    end
-
-    return response.result or response
+    return nil, "Không có file kết quả JSON culling"
 end
 
 function TaskRunner:analyzeWhiteBalance(image_path, options)
@@ -426,6 +432,21 @@ function TaskRunner:analyzeWhiteBalance(image_path, options)
 
     local exit_code = LrTasks.execute(cmd)
 
+    if LrFileUtils.exists(result_path) then
+        local result_content = LrFileUtils.readFile(result_path)
+        LrFileUtils.delete(result_path)
+        if result_content and result_content ~= "" then
+            local response = Json.decode(result_content)
+            if response then
+                if LrFileUtils.exists(err_log_path) then LrFileUtils.delete(err_log_path) end
+                if response.status == "error" then
+                    return nil, response.error or "Lỗi không xác định từ WB Engine"
+                end
+                return response.result or response
+            end
+        end
+    end
+
     if exit_code ~= 0 then
         local err_detail = ""
         if LrFileUtils.exists(err_log_path) then
@@ -443,27 +464,7 @@ function TaskRunner:analyzeWhiteBalance(image_path, options)
         LrFileUtils.delete(err_log_path)
     end
 
-    if not LrFileUtils.exists(result_path) then
-        return nil, "Không có file kết quả JSON WB"
-    end
-
-    local result_content = LrFileUtils.readFile(result_path)
-    LrFileUtils.delete(result_path)
-
-    if not result_content then
-        return nil, "Không thể đọc file kết quả JSON WB"
-    end
-
-    local response = Json.decode(result_content)
-    if not response then
-        return nil, "Không thể phân tích dữ liệu JSON WB"
-    end
-
-    if response.status == "error" then
-        return nil, response.error or "Lỗi không xác định từ WB Engine"
-    end
-
-    return response.result or response
+    return nil, "Không có file kết quả JSON WB"
 end
 
 function TaskRunner:chat_edit(image_path, prompt, options)
@@ -536,6 +537,21 @@ function TaskRunner:chat_edit(image_path, prompt, options)
         LrFileUtils.delete(prompt_file)
     end
 
+    if LrFileUtils.exists(result_path) then
+        local result_content = LrFileUtils.readFile(result_path)
+        LrFileUtils.delete(result_path)
+        if result_content and result_content ~= "" then
+            local response = Json.decode(result_content)
+            if response then
+                if LrFileUtils.exists(err_log_path) then LrFileUtils.delete(err_log_path) end
+                if response.status == "error" then
+                    return nil, response.error or "Lỗi từ mô hình AI"
+                end
+                return response.result or response
+            end
+        end
+    end
+
     if exit_code ~= 0 then
         local err_detail = ""
         if LrFileUtils.exists(err_log_path) then
@@ -553,27 +569,7 @@ function TaskRunner:chat_edit(image_path, prompt, options)
         LrFileUtils.delete(err_log_path)
     end
 
-    if not LrFileUtils.exists(result_path) then
-        return nil, "Không có file kết quả JSON từ AI"
-    end
-
-    local result_content = LrFileUtils.readFile(result_path)
-    LrFileUtils.delete(result_path)
-
-    if not result_content then
-        return nil, "Không thể đọc file kết quả JSON từ AI"
-    end
-
-    local response = Json.decode(result_content)
-    if not response then
-        return nil, "Không thể giải mã dữ liệu JSON từ AI"
-    end
-
-    if response.status == "error" then
-        return nil, response.error or "Lỗi từ mô hình AI"
-    end
-
-    return response.result or response
+    return nil, "Không có file kết quả JSON từ AI"
 end
 
 function TaskRunner:get_presets(category)

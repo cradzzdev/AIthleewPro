@@ -1,0 +1,12 @@
+-- Sample preset for portraits
+s = {
+    Temperature = 5,
+    Tint = 5,
+    Exposure = 0.1,
+    Contrast = 5,
+    Highlights = -15,
+    Shadows = 10,
+    Vibrance = 8,
+    Clarity = 10,
+    Saturation = -5,
+}

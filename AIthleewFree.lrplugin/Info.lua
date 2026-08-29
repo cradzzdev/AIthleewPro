@@ -8,9 +8,9 @@ return {
     LrSdkVersion = 13.0,
     LrSdkMinimumVersion = 10.0,
     LrPluginName = "AIthleewFree",
-    LrPluginInfoUrl = "https://github.com/cradzz/AIthleewFree",
+    LrPluginInfoUrl = "https://aithleewpro.vercel.app/",
     LrPluginAuthor = "AIthleew Team",
-    LrPluginVersion = "1.0.0",
+    LrPluginVersion = "2.0",
     LrToolkitIdentifier = "com.aithleewfree.lightroom.toolkit",
     LrPluginInfoProvider = "PluginManagerProvider.lua",
 
@@ -49,10 +49,10 @@ return {
     LrForceInitPlugin = true,
 
     VERSION = {
-        major = 1,
+        major = 2,
         minor = 0,
         revision = 0,
-        build = 20260824,
+        build = 20260829,
         edition = "free",
     },
 }

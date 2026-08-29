@@ -2,7 +2,7 @@
     AIthleewFree - Develop Settings Adjuster
     Applies basic tone and neutral white balance adjustments to Lightroom develop settings.
     Free Edition limits: Basic Tone (Exposure, Contrast, Highlights, Shadows, Whites, Blacks, Temp, Tint, Vibrance, Saturation).
-    Effects, Color Grading, HSL Channels, and Advanced Presence are restricted to Pro/Plus.
+    Effects, Color Grading, HSL Channels, AI Masking, and Advanced Presence are restricted to Pro.
 ]]
 
 local LrApplication = import "LrApplication"
@@ -44,7 +44,7 @@ function Adjuster:buildSettings(adjustments, photo)
     -- Process Version
     settings.ProcessVersion = "15.4"
 
-    -- White Balance (RAW Kelvin 2000-50000 vs Non-RAW Relative Shift -100 to +100)
+    -- White Balance (Temperature & Tint)
     local isRaw = false
     if photo then
         isRaw = FormatHelper.isRawPhoto(photo)
@@ -53,7 +53,7 @@ function Adjuster:buildSettings(adjustments, photo)
         isRaw = adjustments.is_raw
     end
 
-    if adjustments.temperature ~= nil or adjustments.tint ~= nil or adjustments.target_kelvin ~= nil or adjustments.relative_temp ~= nil or adjustments.wb ~= nil then
+    if (adjustments.temperature ~= nil or adjustments.tint ~= nil or adjustments.target_kelvin ~= nil or adjustments.relative_temp ~= nil or adjustments.wb ~= nil) then
         settings.WhiteBalance = "Custom"
 
         local tempVal = adjustments.temperature
@@ -86,90 +86,107 @@ function Adjuster:buildSettings(adjustments, photo)
                 local s = tonumber(tempVal) or 0
                 if s < -100 then s = -100 end
                 if s > 100 then s = 100 end
-                settings.Temperature = math.floor(s + 0.5)
+                local finalTemp = math.floor(s + 0.5)
+                settings.IncrementalTemperature = finalTemp
                 count = count + 1
             end
             if tintVal ~= nil then
                 local t = tonumber(tintVal) or 0
                 if t < -100 then t = -100 end
                 if t > 100 then t = 100 end
-                settings.Tint = math.floor(t + 0.5)
+                local finalTint = math.floor(t + 0.5)
+                settings.IncrementalTint = finalTint
                 count = count + 1
             end
         end
     end
 
-    -- Basic Tone (PV2012 keys) - Available in Free
+    -- Basic Tone sliders
+    local function clamp(val, min_v, max_v)
+        if not val then return nil end
+        val = tonumber(val)
+        if not val then return nil end
+        if val < min_v then val = min_v end
+        if val > max_v then val = max_v end
+        return val
+    end
+
+    local function clampInt(val, min_v, max_v)
+        local c = clamp(val, min_v, max_v)
+        return c and math.floor(c + 0.5) or nil
+    end
+
     if adjustments.exposure ~= nil then
-        settings.Exposure2012 = tonumber(adjustments.exposure) or 0
+        settings.Exposure2012 = clamp(adjustments.exposure, -5.0, 5.0)
         count = count + 1
     end
+
     if adjustments.contrast ~= nil then
-        settings.Contrast2012 = tonumber(adjustments.contrast) or 0
+        settings.Contrast2012 = clampInt(adjustments.contrast, -100, 100)
         count = count + 1
     end
+
     if adjustments.highlights ~= nil then
-        settings.Highlights2012 = tonumber(adjustments.highlights) or 0
+        settings.Highlights2012 = clampInt(adjustments.highlights, -100, 100)
         count = count + 1
     end
+
     if adjustments.shadows ~= nil then
-        settings.Shadows2012 = tonumber(adjustments.shadows) or 0
+        settings.Shadows2012 = clampInt(adjustments.shadows, -100, 100)
         count = count + 1
     end
+
     if adjustments.whites ~= nil then
-        settings.Whites2012 = tonumber(adjustments.whites) or 0
+        settings.Whites2012 = clampInt(adjustments.whites, -100, 100)
         count = count + 1
     end
+
     if adjustments.blacks ~= nil then
-        settings.Blacks2012 = tonumber(adjustments.blacks) or 0
+        settings.Blacks2012 = clampInt(adjustments.blacks, -100, 100)
         count = count + 1
     end
 
-    -- Basic Presence
+    -- Presence (Vibrance & Saturation only in Free)
     if adjustments.vibrance ~= nil then
-        settings.Vibrance = tonumber(adjustments.vibrance) or 0
-        count = count + 1
-    end
-    if adjustments.saturation ~= nil then
-        settings.Saturation = tonumber(adjustments.saturation) or 0
+        settings.Vibrance = clampInt(adjustments.vibrance, -100, 100)
         count = count + 1
     end
 
-    logger:info("AIthleewFree: Built develop settings with " .. tostring(count) .. " basic parameters")
+    if adjustments.saturation ~= nil then
+        settings.Saturation = clampInt(adjustments.saturation, -100, 100)
+        count = count + 1
+    end
+
     return settings, count
 end
 
-function Adjuster:apply(photo, adjustments, history_label)
+function Adjuster:applyColors(photo, adjustments, history_label)
     if not photo then
-        logger:error("apply called with nil photo")
+        logger:error("applyColors called with nil photo")
         return false, "no photo"
     end
-    if not adjustments then
-        logger:warn("No adjustments provided")
-        return false, "no adjustments"
-    end
 
-    local settings, count = self:buildSettings(adjustments, photo)
-    if not settings or count == 0 then
-        logger:warn("No basic adjustments to apply")
-        return false, "no adjustments"
+    local globalSettings, count = self:buildSettings(adjustments, photo)
+    if not globalSettings or count == 0 then
+        return false, "no adjustments to apply"
     end
 
     local catalog = LrApplication.activeCatalog()
-    local histName = history_label or "AIthleewFree Chỉnh Màu Tự Động"
+    local histName = history_label or "AIthleewFree AI"
 
-    local function doApply()
+    local function execute()
         local ok, err = LrTasks.pcall(function()
             catalog:withWriteAccessDo(histName, function(context)
-                photo:applyDevelopSettings(settings, histName)
-            end, { timeout = 30 })
+                photo:applyDevelopSettings(globalSettings)
+            end)
+        end)
 
-            -- Live develop controller update if in Develop Module
+        if ok then
             pcall(function()
                 local LrDevelopController = import "LrDevelopController"
-                if LrDevelopController then
-                    for k, v in pairs(settings) do
-                        if k ~= "ProcessVersion" and k ~= "ToneCurvePV2012" and k ~= "WhiteBalance" and k ~= "Temperature" and k ~= "Tint" and k ~= "IncrementalTemperature" and k ~= "IncrementalTint" then
+                if LrDevelopController and type(LrDevelopController.setValue) == "function" then
+                    for k, v in pairs(globalSettings) do
+                        if k ~= "ProcessVersion" and k ~= "WhiteBalance" then
                             pcall(function()
                                 LrDevelopController.setValue(k, v)
                             end)
@@ -177,25 +194,26 @@ function Adjuster:apply(photo, adjustments, history_label)
                     end
                 end
             end)
-        end)
-
-        if ok then
-            logger:info(string.format("AIthleewFree: Applied %d basic adjustments to: %s", count, photo:getFormattedMetadata("fileName")))
+            logger:info(string.format("AIthleewFree: Applied color adjustments to: %s", photo:getFormattedMetadata("fileName")))
             return true
         else
-            logger:error("AIthleewFree: Failed to apply adjustments: " .. tostring(err))
+            logger:error("AIthleewFree: applyDevelopSettings failed: " .. tostring(err))
             return false, tostring(err)
         end
     end
 
     if LrTasks.canYield() then
-        return doApply()
+        return execute()
     else
         LrTasks.startAsyncTask(function()
-            doApply()
+            execute()
         end)
         return true
     end
+end
+
+function Adjuster:apply(photo, adjustments, history_label)
+    return self:applyColors(photo, adjustments, history_label)
 end
 
 return Adjuster
