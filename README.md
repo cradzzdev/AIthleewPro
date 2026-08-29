@@ -206,7 +206,7 @@ Hỗ trợ **100+ vision models** từ **5 providers** với **tự động fall
 
 | | Pro | Plus | Free |
 |--|-----|------|------|
-| **Giá** | $49 | $19 | Miễn phí |
+| **Giá** | N/A | N/A | Miễn phí |
 | **Chỉnh màu AI** | Full (3 sections) | Full | Mục 1 cơ bản (Tone & Exposure) |
 | **Auto White Balance** | ✅ | ✅ | ❌ |
 | **Color Look Styles (10)** | ✅ | ✅ | ❌ |
